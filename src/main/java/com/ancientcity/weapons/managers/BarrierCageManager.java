@@ -136,7 +136,9 @@ public class BarrierCageManager {
      * Called when the plugin is disabled to clean up.
      */
     public void removeAllCages() {
-        for (UUID playerUuid : new HashSet<>(activeCages.keySet())) {
+        // Collect UUIDs to avoid ConcurrentModificationException
+        UUID[] playerUuids = activeCages.keySet().toArray(new UUID[0]);
+        for (UUID playerUuid : playerUuids) {
             removeCage(playerUuid);
         }
     }

@@ -104,6 +104,17 @@ public class ItemListener implements Listener {
         Vector direction = eyeLocation.getDirection().normalize();
         World world = player.getWorld();
 
+        // Calculate the end point of the beam for entity detection
+        Location beamEnd = eyeLocation.clone().add(direction.clone().multiply(WARDEN_BEAM_RANGE));
+        Location beamCenter = eyeLocation.clone().add(direction.clone().multiply(WARDEN_BEAM_RANGE / 2));
+        
+        // Get all entities in the beam area once (more efficient)
+        double searchRadius = WARDEN_BEAM_RANGE / 2 + WARDEN_BEAM_WIDTH;
+        Collection<Entity> potentialTargets = world.getNearbyEntities(beamCenter, searchRadius, searchRadius, searchRadius);
+        
+        // Track damaged entities to avoid hitting them multiple times
+        java.util.Set<Entity> damagedEntities = new java.util.HashSet<>();
+
         // Create beam visual and check for entities
         for (double d = 0; d <= WARDEN_BEAM_RANGE; d += 0.25) {
             Location point = eyeLocation.clone().add(direction.clone().multiply(d));
@@ -112,12 +123,16 @@ public class ItemListener implements Listener {
             world.spawnParticle(Particle.SOUL_FIRE_FLAME, point, 2, 0.1, 0.1, 0.1, 0.01);
             world.spawnParticle(Particle.SCULK_SOUL, point, 1, 0.05, 0.05, 0.05, 0.02);
 
-            // Check for entities in the beam path
-            Collection<Entity> nearbyEntities = world.getNearbyEntities(point, WARDEN_BEAM_WIDTH / 2, WARDEN_BEAM_WIDTH / 2, WARDEN_BEAM_WIDTH / 2);
-            for (Entity entity : nearbyEntities) {
-                if (entity instanceof LivingEntity livingEntity && entity != player) {
+            // Check cached entities against this beam point
+            for (Entity entity : potentialTargets) {
+                if (damagedEntities.contains(entity)) continue;
+                if (!(entity instanceof LivingEntity livingEntity) || entity == player) continue;
+                
+                // Check if entity is within beam width at this point
+                if (entity.getLocation().distanceSquared(point) <= (WARDEN_BEAM_WIDTH / 2) * (WARDEN_BEAM_WIDTH / 2) + 1) {
                     // Deal damage
                     livingEntity.damage(WARDEN_BEAM_DAMAGE, player);
+                    damagedEntities.add(entity);
                     
                     // Visual effect on hit
                     world.spawnParticle(Particle.SCULK_SOUL, entity.getLocation().add(0, 1, 0), 10, 0.3, 0.5, 0.3, 0.1);
