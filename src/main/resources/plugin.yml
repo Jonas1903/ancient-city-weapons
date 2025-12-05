@@ -1,0 +1,22 @@
+name: AncientCityWeapons
+version: ${project.version}
+main: com.ancientcity.weapons.AncientCityWeapons
+api-version: '1.21'
+description: Ancient City themed weapons with special abilities
+
+authors:
+  - AncientCityWeapons Team
+
+commands:
+  ancientweapons:
+    description: Main command for Ancient City Weapons plugin
+    usage: /<command> give <beam|cage>
+    aliases: [aw, acw]
+
+permissions:
+  ancientweapons.give:
+    description: Allows player to give themselves Ancient City weapons
+    default: op
+  ancientweapons.use:
+    description: Allows player to use Ancient City weapons
+    default: true
