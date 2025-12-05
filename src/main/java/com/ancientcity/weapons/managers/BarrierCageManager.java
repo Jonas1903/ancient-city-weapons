@@ -18,8 +18,8 @@ import java.util.*;
  */
 public class BarrierCageManager {
 
-    private static final int CAGE_RADIUS = 4;
-    private static final int CAGE_DURATION_SECONDS = 10;
+    private static final int DEFAULT_CAGE_RADIUS = 4;
+    private static final int DEFAULT_CAGE_DURATION_SECONDS = 10;
 
     private final AncientCityWeapons plugin;
     // Map of player UUID to their active cage block locations
@@ -31,12 +31,32 @@ public class BarrierCageManager {
     }
 
     /**
+     * Gets the cage radius from config.
+     *
+     * @return Cage radius in blocks
+     */
+    public int getCageRadius() {
+        return plugin.getConfig().getInt("barrier-cage.radius", DEFAULT_CAGE_RADIUS);
+    }
+
+    /**
+     * Gets the cage duration from config.
+     *
+     * @return Cage duration in seconds
+     */
+    public int getCageDuration() {
+        return plugin.getConfig().getInt("barrier-cage.duration", DEFAULT_CAGE_DURATION_SECONDS);
+    }
+
+    /**
      * Creates a barrier cage around the player.
      *
      * @param player The player to create the cage around
      */
     public void createCage(Player player) {
         UUID playerUuid = player.getUniqueId();
+        int cageRadius = getCageRadius();
+        int cageDuration = getCageDuration();
 
         // Remove any existing cage for this player
         if (activeCages.containsKey(playerUuid)) {
@@ -50,13 +70,13 @@ public class BarrierCageManager {
         Set<Location> cageBlocks = new HashSet<>();
 
         // Create a hollow sphere of barrier blocks
-        for (int x = -CAGE_RADIUS; x <= CAGE_RADIUS; x++) {
-            for (int y = -CAGE_RADIUS; y <= CAGE_RADIUS; y++) {
-                for (int z = -CAGE_RADIUS; z <= CAGE_RADIUS; z++) {
+        for (int x = -cageRadius; x <= cageRadius; x++) {
+            for (int y = -cageRadius; y <= cageRadius; y++) {
+                for (int z = -cageRadius; z <= cageRadius; z++) {
                     double distance = Math.sqrt(x * x + y * y + z * z);
                     
                     // Only place blocks on the outer shell of the sphere
-                    if (distance >= CAGE_RADIUS - 0.5 && distance <= CAGE_RADIUS + 0.5) {
+                    if (distance >= cageRadius - 0.5 && distance <= cageRadius + 0.5) {
                         Location blockLoc = center.clone().add(x, y, z);
                         Block block = blockLoc.getBlock();
                         
@@ -74,7 +94,7 @@ public class BarrierCageManager {
         activeCages.put(playerUuid, cageBlocks);
 
         // Spawn particles around the cage for visual effect
-        spawnCageParticles(center, world);
+        spawnCageParticles(center, world, cageRadius);
 
         // Schedule removal of the cage after duration expires
         new BukkitRunnable() {
@@ -82,7 +102,7 @@ public class BarrierCageManager {
             public void run() {
                 removeCage(playerUuid);
             }
-        }.runTaskLater(plugin, CAGE_DURATION_SECONDS * 20L);
+        }.runTaskLater(plugin, cageDuration * 20L);
     }
 
     /**
@@ -90,13 +110,14 @@ public class BarrierCageManager {
      *
      * @param center The center of the cage
      * @param world The world to spawn particles in
+     * @param radius The radius of the cage
      */
-    private void spawnCageParticles(Location center, World world) {
+    private void spawnCageParticles(Location center, World world, int radius) {
         // Spawn soul fire particles around the cage perimeter
         for (int i = 0; i < 360; i += 15) {
             double radians = Math.toRadians(i);
-            double x = center.getX() + 0.5 + CAGE_RADIUS * Math.cos(radians);
-            double z = center.getZ() + 0.5 + CAGE_RADIUS * Math.sin(radians);
+            double x = center.getX() + 0.5 + radius * Math.cos(radians);
+            double z = center.getZ() + 0.5 + radius * Math.sin(radians);
             
             world.spawnParticle(Particle.SOUL_FIRE_FLAME, x, center.getY() + 1, z, 3, 0.1, 0.5, 0.1, 0.02);
         }

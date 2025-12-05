@@ -1,0 +1,16 @@
+# Ancient City Weapons Configuration
+
+# Cooldowns are in seconds
+cooldowns:
+  warden-beam: 90      # 1 minute 30 seconds
+  barrier-cage: 60     # 1 minute
+
+# Barrier cage settings
+barrier-cage:
+  duration: 10         # How long the cage lasts in seconds
+  radius: 4            # Radius of the cage
+
+# Warden beam settings
+warden-beam:
+  damage: 6.0          # Damage in half-hearts (6 = 3 hearts)
+  range: 4             # Range in blocks

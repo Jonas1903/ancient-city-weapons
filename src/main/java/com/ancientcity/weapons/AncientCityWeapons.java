@@ -22,8 +22,11 @@ public class AncientCityWeapons extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        // Save default config if it doesn't exist
+        saveDefaultConfig();
+
         // Initialize managers
-        this.cooldownManager = new CooldownManager();
+        this.cooldownManager = new CooldownManager(this);
         this.itemManager = new ItemManager();
         this.barrierCageManager = new BarrierCageManager(this);
 
@@ -84,5 +87,41 @@ public class AncientCityWeapons extends JavaPlugin {
      */
     public BarrierCageManager getBarrierCageManager() {
         return barrierCageManager;
+    }
+
+    /**
+     * Gets the warden beam damage from config.
+     *
+     * @return Damage in half-hearts
+     */
+    public double getWardenBeamDamage() {
+        return getConfig().getDouble("warden-beam.damage", 6.0);
+    }
+
+    /**
+     * Gets the warden beam range from config.
+     *
+     * @return Range in blocks
+     */
+    public double getWardenBeamRange() {
+        return getConfig().getDouble("warden-beam.range", 4.0);
+    }
+
+    /**
+     * Gets the barrier cage duration from config.
+     *
+     * @return Duration in seconds
+     */
+    public int getBarrierCageDuration() {
+        return getConfig().getInt("barrier-cage.duration", 10);
+    }
+
+    /**
+     * Gets the barrier cage radius from config.
+     *
+     * @return Radius in blocks
+     */
+    public int getBarrierCageRadius() {
+        return getConfig().getInt("barrier-cage.radius", 4);
     }
 }

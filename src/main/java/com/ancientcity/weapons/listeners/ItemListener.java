@@ -4,10 +4,10 @@ import com.ancientcity.weapons.AncientCityWeapons;
 import com.ancientcity.weapons.managers.BarrierCageManager;
 import com.ancientcity.weapons.managers.CooldownManager;
 import com.ancientcity.weapons.managers.ItemManager;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -19,6 +19,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -26,9 +28,7 @@ import java.util.UUID;
  */
 public class ItemListener implements Listener {
 
-    private static final double WARDEN_BEAM_RANGE = 4.0;
     private static final double WARDEN_BEAM_WIDTH = 1.0;
-    private static final double WARDEN_BEAM_DAMAGE = 6.0; // 3 hearts = 6 HP
 
     private final AncientCityWeapons plugin;
 
@@ -78,10 +78,7 @@ public class ItemListener implements Listener {
         if (cooldownManager.isOnWardenBeamCooldown(playerUuid)) {
             int remaining = cooldownManager.getWardenBeamRemainingTime(playerUuid);
             String formattedTime = cooldownManager.formatTime(remaining);
-            player.sendMessage(Component.text("⚡ Warden Beam is on cooldown! ")
-                    .color(NamedTextColor.RED)
-                    .append(Component.text("(" + formattedTime + " remaining)")
-                            .color(NamedTextColor.GRAY)));
+            player.sendMessage(ChatColor.RED + "⚡ Warden Beam is on cooldown! " + ChatColor.GRAY + "(" + formattedTime + " remaining)");
             return;
         }
 
@@ -90,8 +87,7 @@ public class ItemListener implements Listener {
 
         // Set cooldown
         cooldownManager.setWardenBeamCooldown(playerUuid);
-        player.sendMessage(Component.text("⚡ Warden Beam fired!")
-                .color(NamedTextColor.DARK_AQUA));
+        player.sendMessage(ChatColor.DARK_AQUA + "⚡ Warden Beam fired!");
     }
 
     /**
@@ -100,23 +96,25 @@ public class ItemListener implements Listener {
      * @param player The player firing the beam
      */
     private void fireWardenBeam(Player player) {
+        double wardenBeamRange = plugin.getWardenBeamRange();
+        double wardenBeamDamage = plugin.getWardenBeamDamage();
+
         Location eyeLocation = player.getEyeLocation();
         Vector direction = eyeLocation.getDirection().normalize();
         World world = player.getWorld();
 
-        // Calculate the end point of the beam for entity detection
-        Location beamEnd = eyeLocation.clone().add(direction.clone().multiply(WARDEN_BEAM_RANGE));
-        Location beamCenter = eyeLocation.clone().add(direction.clone().multiply(WARDEN_BEAM_RANGE / 2));
+        // Calculate the center point for entity detection
+        Location beamCenter = eyeLocation.clone().add(direction.clone().multiply(wardenBeamRange / 2));
         
         // Get all entities in the beam area once (more efficient)
-        double searchRadius = WARDEN_BEAM_RANGE / 2 + WARDEN_BEAM_WIDTH;
+        double searchRadius = wardenBeamRange / 2 + WARDEN_BEAM_WIDTH;
         Collection<Entity> potentialTargets = world.getNearbyEntities(beamCenter, searchRadius, searchRadius, searchRadius);
         
         // Track damaged entities to avoid hitting them multiple times
-        java.util.Set<Entity> damagedEntities = new java.util.HashSet<>();
+        Set<Entity> damagedEntities = new HashSet<>();
 
         // Create beam visual and check for entities
-        for (double d = 0; d <= WARDEN_BEAM_RANGE; d += 0.25) {
+        for (double d = 0; d <= wardenBeamRange; d += 0.25) {
             Location point = eyeLocation.clone().add(direction.clone().multiply(d));
 
             // Spawn particles for the beam visual (dark blue/soul themed)
@@ -131,7 +129,7 @@ public class ItemListener implements Listener {
                 // Check if entity is within beam width at this point
                 if (entity.getLocation().distanceSquared(point) <= (WARDEN_BEAM_WIDTH / 2) * (WARDEN_BEAM_WIDTH / 2) + 1) {
                     // Deal damage
-                    livingEntity.damage(WARDEN_BEAM_DAMAGE, player);
+                    livingEntity.damage(wardenBeamDamage, player);
                     damagedEntities.add(entity);
                     
                     // Visual effect on hit
@@ -141,7 +139,7 @@ public class ItemListener implements Listener {
         }
 
         // Play a sound effect
-        player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_WARDEN_SONIC_BOOM, 0.5f, 1.5f);
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WARDEN_SONIC_BOOM, 0.5f, 1.5f);
     }
 
     /**
@@ -157,10 +155,7 @@ public class ItemListener implements Listener {
         if (cooldownManager.isOnBarrierCageCooldown(playerUuid)) {
             int remaining = cooldownManager.getBarrierCageRemainingTime(playerUuid);
             String formattedTime = cooldownManager.formatTime(remaining);
-            player.sendMessage(Component.text("🛡 Barrier Cage is on cooldown! ")
-                    .color(NamedTextColor.RED)
-                    .append(Component.text("(" + formattedTime + " remaining)")
-                            .color(NamedTextColor.GRAY)));
+            player.sendMessage(ChatColor.RED + "🛡 Barrier Cage is on cooldown! " + ChatColor.GRAY + "(" + formattedTime + " remaining)");
             return;
         }
 
@@ -170,9 +165,7 @@ public class ItemListener implements Listener {
 
         // Set cooldown
         cooldownManager.setBarrierCageCooldown(playerUuid);
-        player.sendMessage(Component.text("🛡 Barrier Cage activated! ")
-                .color(NamedTextColor.DARK_AQUA)
-                .append(Component.text("(10 seconds)")
-                        .color(NamedTextColor.GRAY)));
+        int duration = plugin.getBarrierCageDuration();
+        player.sendMessage(ChatColor.DARK_AQUA + "🛡 Barrier Cage activated! " + ChatColor.GRAY + "(" + duration + " seconds)");
     }
 }
