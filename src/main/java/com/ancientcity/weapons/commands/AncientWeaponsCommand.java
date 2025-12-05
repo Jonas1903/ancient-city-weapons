@@ -1,16 +1,13 @@
 package com.ancientcity.weapons.commands;
 
 import com.ancientcity.weapons.AncientCityWeapons;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,10 +26,9 @@ public class AncientWeaponsCommand implements CommandExecutor, TabCompleter {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("This command can only be used by players!")
-                    .color(NamedTextColor.RED));
+            sender.sendMessage(ChatColor.RED + "This command can only be used by players!");
             return true;
         }
 
@@ -50,8 +46,7 @@ public class AncientWeaponsCommand implements CommandExecutor, TabCompleter {
         }
 
         if (!player.hasPermission("ancientweapons.give")) {
-            player.sendMessage(Component.text("You don't have permission to use this command!")
-                    .color(NamedTextColor.RED));
+            player.sendMessage(ChatColor.RED + "You don't have permission to use this command!");
             return true;
         }
 
@@ -72,12 +67,7 @@ public class AncientWeaponsCommand implements CommandExecutor, TabCompleter {
     private void giveWardenBeam(Player player) {
         ItemStack wardenBeam = plugin.getItemManager().createWardenBeam();
         player.getInventory().addItem(wardenBeam);
-        player.sendMessage(Component.text("You received a ")
-                .color(NamedTextColor.GREEN)
-                .append(Component.text("Warden Beam")
-                        .color(NamedTextColor.DARK_AQUA))
-                .append(Component.text("!")
-                        .color(NamedTextColor.GREEN)));
+        player.sendMessage(ChatColor.GREEN + "You received a " + ChatColor.DARK_AQUA + "Warden Beam" + ChatColor.GREEN + "!");
     }
 
     /**
@@ -88,12 +78,7 @@ public class AncientWeaponsCommand implements CommandExecutor, TabCompleter {
     private void giveBarrierCage(Player player) {
         ItemStack barrierCage = plugin.getItemManager().createBarrierCage();
         player.getInventory().addItem(barrierCage);
-        player.sendMessage(Component.text("You received a ")
-                .color(NamedTextColor.GREEN)
-                .append(Component.text("Barrier Cage")
-                        .color(NamedTextColor.DARK_AQUA))
-                .append(Component.text("!")
-                        .color(NamedTextColor.GREEN)));
+        player.sendMessage(ChatColor.GREEN + "You received a " + ChatColor.DARK_AQUA + "Barrier Cage" + ChatColor.GREEN + "!");
     }
 
     /**
@@ -102,20 +87,13 @@ public class AncientWeaponsCommand implements CommandExecutor, TabCompleter {
      * @param player The player to send usage info to
      */
     private void sendUsage(Player player) {
-        player.sendMessage(Component.text("━━━ Ancient City Weapons ━━━")
-                .color(NamedTextColor.DARK_AQUA));
-        player.sendMessage(Component.text("/ancientweapons give beam")
-                .color(NamedTextColor.GOLD)
-                .append(Component.text(" - Get the Warden Beam")
-                        .color(NamedTextColor.GRAY)));
-        player.sendMessage(Component.text("/ancientweapons give cage")
-                .color(NamedTextColor.GOLD)
-                .append(Component.text(" - Get the Barrier Cage")
-                        .color(NamedTextColor.GRAY)));
+        player.sendMessage(ChatColor.DARK_AQUA + "━━━ Ancient City Weapons ━━━");
+        player.sendMessage(ChatColor.GOLD + "/ancientweapons give beam" + ChatColor.GRAY + " - Get the Warden Beam");
+        player.sendMessage(ChatColor.GOLD + "/ancientweapons give cage" + ChatColor.GRAY + " - Get the Barrier Cage");
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
         List<String> completions = new ArrayList<>();
 
         if (args.length == 1) {

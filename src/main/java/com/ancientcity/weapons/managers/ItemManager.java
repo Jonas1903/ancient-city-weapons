@@ -1,8 +1,6 @@
 package com.ancientcity.weapons.managers;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -38,27 +36,16 @@ public class ItemManager {
 
         if (meta != null) {
             // Set display name with Ancient City theme
-            meta.displayName(Component.text("Warden Beam")
-                    .color(NamedTextColor.DARK_AQUA)
-                    .decoration(TextDecoration.ITALIC, false)
-                    .decoration(TextDecoration.BOLD, true));
+            meta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Warden Beam");
 
             // Set lore
-            List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("A fragment imbued with the Warden's power.")
-                    .color(NamedTextColor.GRAY)
-                    .decoration(TextDecoration.ITALIC, true));
-            lore.add(Component.empty());
-            lore.add(Component.text("Right-click to fire a devastating beam")
-                    .color(NamedTextColor.DARK_PURPLE)
-                    .decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.text("Range: 4 blocks | Damage: 3 hearts")
-                    .color(NamedTextColor.DARK_GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.text("Cooldown: 1 minute 30 seconds")
-                    .color(NamedTextColor.DARK_GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
-            meta.lore(lore);
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "A fragment imbued with the Warden's power.");
+            lore.add("");
+            lore.add(ChatColor.DARK_PURPLE + "Right-click to fire a devastating beam");
+            lore.add(ChatColor.DARK_GRAY + "Range: 4 blocks | Damage: 3 hearts");
+            lore.add(ChatColor.DARK_GRAY + "Cooldown: 1 minute 30 seconds");
+            meta.setLore(lore);
 
             // Set custom item identifier
             meta.getPersistentDataContainer().set(itemIdKey, PersistentDataType.STRING, WARDEN_BEAM_ID);
@@ -80,27 +67,16 @@ public class ItemManager {
 
         if (meta != null) {
             // Set display name with Ancient City theme
-            meta.displayName(Component.text("Barrier Cage")
-                    .color(NamedTextColor.DARK_AQUA)
-                    .decoration(TextDecoration.ITALIC, false)
-                    .decoration(TextDecoration.BOLD, true));
+            meta.setDisplayName(ChatColor.DARK_AQUA + "" + ChatColor.BOLD + "Barrier Cage");
 
             // Set lore
-            List<Component> lore = new ArrayList<>();
-            lore.add(Component.text("A core that harnesses protective energy.")
-                    .color(NamedTextColor.GRAY)
-                    .decoration(TextDecoration.ITALIC, true));
-            lore.add(Component.empty());
-            lore.add(Component.text("Right-click to create a protective barrier")
-                    .color(NamedTextColor.DARK_PURPLE)
-                    .decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.text("Radius: 4 blocks | Duration: 10 seconds")
-                    .color(NamedTextColor.DARK_GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
-            lore.add(Component.text("Cooldown: 1 minute")
-                    .color(NamedTextColor.DARK_GRAY)
-                    .decoration(TextDecoration.ITALIC, false));
-            meta.lore(lore);
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GRAY + "" + ChatColor.ITALIC + "A core that harnesses protective energy.");
+            lore.add("");
+            lore.add(ChatColor.DARK_PURPLE + "Right-click to create a protective barrier");
+            lore.add(ChatColor.DARK_GRAY + "Radius: 4 blocks | Duration: 10 seconds");
+            lore.add(ChatColor.DARK_GRAY + "Cooldown: 1 minute");
+            meta.setLore(lore);
 
             // Set custom item identifier
             meta.getPersistentDataContainer().set(itemIdKey, PersistentDataType.STRING, BARRIER_CAGE_ID);

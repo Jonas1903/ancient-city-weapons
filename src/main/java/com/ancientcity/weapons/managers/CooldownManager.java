@@ -1,5 +1,7 @@
 package com.ancientcity.weapons.managers;
 
+import com.ancientcity.weapons.AncientCityWeapons;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -10,17 +12,38 @@ import java.util.UUID;
  */
 public class CooldownManager {
 
-    // Cooldown times in seconds
-    public static final int WARDEN_BEAM_COOLDOWN = 90; // 1 minute 30 seconds
-    public static final int BARRIER_CAGE_COOLDOWN = 60; // 1 minute
+    // Default cooldown times in seconds (can be overridden by config)
+    public static final int DEFAULT_WARDEN_BEAM_COOLDOWN = 90; // 1 minute 30 seconds
+    public static final int DEFAULT_BARRIER_CAGE_COOLDOWN = 60; // 1 minute
+
+    private final AncientCityWeapons plugin;
 
     // Maps to store cooldown expiration times (in milliseconds)
     private final Map<UUID, Long> wardenBeamCooldowns;
     private final Map<UUID, Long> barrierCageCooldowns;
 
-    public CooldownManager() {
+    public CooldownManager(AncientCityWeapons plugin) {
+        this.plugin = plugin;
         this.wardenBeamCooldowns = new HashMap<>();
         this.barrierCageCooldowns = new HashMap<>();
+    }
+
+    /**
+     * Gets the Warden Beam cooldown time in seconds from config.
+     *
+     * @return Cooldown time in seconds
+     */
+    public int getWardenBeamCooldown() {
+        return plugin.getConfig().getInt("cooldowns.warden-beam", DEFAULT_WARDEN_BEAM_COOLDOWN);
+    }
+
+    /**
+     * Gets the Barrier Cage cooldown time in seconds from config.
+     *
+     * @return Cooldown time in seconds
+     */
+    public int getBarrierCageCooldown() {
+        return plugin.getConfig().getInt("cooldowns.barrier-cage", DEFAULT_BARRIER_CAGE_COOLDOWN);
     }
 
     /**
@@ -56,7 +79,7 @@ public class CooldownManager {
      * @param playerUuid The player's UUID
      */
     public void setWardenBeamCooldown(UUID playerUuid) {
-        long expirationTime = System.currentTimeMillis() + (WARDEN_BEAM_COOLDOWN * 1000L);
+        long expirationTime = System.currentTimeMillis() + (getWardenBeamCooldown() * 1000L);
         wardenBeamCooldowns.put(playerUuid, expirationTime);
     }
 
@@ -93,7 +116,7 @@ public class CooldownManager {
      * @param playerUuid The player's UUID
      */
     public void setBarrierCageCooldown(UUID playerUuid) {
-        long expirationTime = System.currentTimeMillis() + (BARRIER_CAGE_COOLDOWN * 1000L);
+        long expirationTime = System.currentTimeMillis() + (getBarrierCageCooldown() * 1000L);
         barrierCageCooldowns.put(playerUuid, expirationTime);
     }
 
